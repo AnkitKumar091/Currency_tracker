@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>💱 Currency Tracker</h1>
+    <div class="selector">
+      <select id="fromCurrency"></select>
+      <span>➡️</span>
+      <select id="toCurrency"></select>
+    </div>
+    <div id="rateDisplay">Exchange Rate: --</div>
+  </div>
+  <script>
+    const fromCurrency = document.getElementById('fromCurrency');
+    const toCurrency = document.getElementById('toCurrency');
+    const rateDisplay = document.getElementById('rateDisplay');
+
+    const API_KEY = 'Z3TCZuF7S5Wnkec7PtqmhXk7blXx7V9L';
+    const currencyOptions = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
+
+    currencyOptions.forEach(curr => {
+      const opt1 = new Option(curr, curr);
+      const opt2 = new Option(curr, curr);
+      fromCurrency.add(opt1.cloneNode(true));
+      toCurrency.add(opt2.cloneNode(true));
+    });
+
+    fromCurrency.value = 'USD';
+    toCurrency.value = 'EUR';
+
+    async function getExchangeRate() {
+      const from = fromCurrency.value;
+      const to = toCurrency.value;
+
+      const res = await fetch(`https://api.apilayer.com/fixer/latest?base=${from}&symbols=${to}`, {
+        headers: {
+          apikey: API_KEY
+        }
+      });
+      const data = await res.json();
+      const rate = data.rates[to];
+      rateDisplay.innerText = `Exchange Rate: 1 ${from} = ${rate.toFixed(2)} ${to}`;
+    }
+
+    fromCurrency.addEventListener('change', getExchangeRate);
+    toCurrency.addEventListener('change', getExchangeRate);
+
+    getExchangeRate();
+  </script>
+</body>
+</html>
